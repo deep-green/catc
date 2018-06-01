@@ -2,7 +2,7 @@ let socket = io('http://ec2-54-93-171-91.eu-central-1.compute.amazonaws.com:5000
 
 let wTurns = 1, bTurns = 0, active_player = 'w';
 
-let onDrop = function (source, target, piece, newPos, oldPos, orientation) {
+let onChange = function (oldPos, newPos) {
 
     active_player = (active_player === 'w') ? 'b':'w';
     if(wTurns > bTurns) {
@@ -26,7 +26,7 @@ socket.on('makeMove', data => {
 let cfg = {
     draggable: true,
     position: 'start',
-    onDrop: onDrop
+    onChange: onChange
 };
 
 let board = ChessBoard('board', cfg);
