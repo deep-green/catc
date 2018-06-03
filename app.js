@@ -1,32 +1,29 @@
 let socket = io('http://ec2-54-93-171-91.eu-central-1.compute.amazonaws.com:5000');
 
-let wTurns = 1, bTurns = 0, active_player = 'w';
+let chess = new Chess();
 
-let onChange = function (oldPos, newPos) {
+let onDrop = function(source, target, piece, newPos, oldPos, orientation) {
 
-    active_player = (active_player === 'w') ? 'b':'w';
-    if(wTurns > bTurns) {
-        bTurns++;
-    } else {
-        wTurns++;
+    if(source !== target) {
+
+        if(chess.move(source + target, {sloppy: true}) == null) return 'snapback';
+
+        socket.emit('receive', {
+            FEN: chess.fen(),
+            ID_game: 0
+        })
     }
-
-    let fen = ChessBoard.objToFen(newPos) + ' ' + active_player + ' KQkq - ' + bTurns + ' ' + wTurns;
-    console.log(fen);
-    socket.emit('receive', {
-        FEN: fen,
-        ID_game: 2
-    })
 };
-
-socket.on('makeMove', data => {
-    board.move(data.substr(0,2) + '-' + data.substr(2,4));
-});
 
 let cfg = {
     draggable: true,
     position: 'start',
-    onChange: onChange
+    onDrop: onDrop
 };
 
 let board = ChessBoard('board', cfg);
+
+socket.on('makeMove', data => {
+    chess.move(data, {sloppy: true});
+    board.move(data.substr(0,2) + '-' + data.substr(2,4));
+});
