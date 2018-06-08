@@ -8,7 +8,6 @@ let onDrop = function(source, target, piece, newPos, oldPos, orientation) {
 
         if(chess.move(source + target, {sloppy: true}) == null) return 'snapback';
 
-        socket.connect();
         socket.emit('receive', {
             FEN: chess.fen(),
             ID_game: 0
@@ -25,7 +24,6 @@ let cfg = {
 let board = ChessBoard('board', cfg);
 
 socket.on('makeMove', data => {
-    socket.close();
     chess.move(data, {sloppy: true});
     board.move(data.substr(0,2) + '-' + data.substr(2,4));
 });
