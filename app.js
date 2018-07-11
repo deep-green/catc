@@ -24,6 +24,6 @@ let cfg = {
 let board = ChessBoard('board', cfg);
 
 socket.on('makeMove', data => {
-    chess.move(data, {sloppy: true});
-    board.move(data.substr(0,2) + '-' + data.substr(2,4));
+    chess = new Chess(data.FEN);
+    board.position(data.FEN, true);
 });
